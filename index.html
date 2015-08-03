@@ -1,0 +1,167 @@
+<!DOCTYPE link PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Plano incliado</title>
+    <link rel="stylesheet" href="css/stylesheet.css">
+    <link rel="stylesheet" href="css/jquery.mobile-1.4.5.min.css">
+    <link rel="stylesheet" href="css/animate.css">
+    <script src="js/libs/jquery-2.0.3.js"></script>
+    <script src="js/libs/jquery.mobile-1.4.5.min.js"></script>
+    <script src="js/app.js"></script>
+    <script type="text/javascript">
+        var di = new DinamicaIno();
+        $(document).ready(function() {
+            di.init();
+
+            $("#bt_atrito_estatico").click(function() {
+                di.atritoEstatico($(this));
+            });
+        });
+
+    </script>
+</head>
+
+<body>
+    <div id="cronometro" style="display: none;">00:00</div>
+    <div id="div_atrito_estatico">
+        <button id="bt_atrito_estatico">
+        </button>
+        Identificar Coeficiente de Atrito Estático
+    </div>
+    <div id="buttons" style="display: none;">
+        <table cellspadding="0" cellspacing="0" border="0">
+            <tr>
+                <td>
+                    <label style="font-size: 28px;" for="input_medidas">Mostrar Medidas:</label>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="checkbox" data-role="flipswitch" name="input_medidas" id="input_medidas" data-on-text="Sim" data-off-text="Não" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label style="font-size: 28px; padding-top: 20px;" for="input_forcas">Mostrar Diagrama de Forças:</label>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="checkbox" data-role="flipswitch" name="input_forcas" id="input_forcas" data-on-text="Sim" data-off-text="Não" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label style="font-size: 28px; padding-top: 20px;" for="input_forcas">Inclinação:</label>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="range" name="input_inclinacao" id="input_inclinacao" min="10" max="32" value="20">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label style="font-size: 28px; padding-top: 20px;" for="input_massa">Massa:</label>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="text" name="input_massa" id="input_massa" readonly>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label style="font-size: 28px; padding-top: 20px;" for="input_massa">Aceleração:</label>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="text" name="input_massa" id="input_aceleracao" readonly />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label style="font-size: 28px; padding-top: 20px;" for="input_atrito_cinetico">Coeficiente de Atrito Cinético:</label>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="text" name="input_atrito_cinetico" id="input_atrito_cinetico" readonly />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label style="font-size: 28px; padding-top: 20px;" for="input_atrito_estatico">Coeficiente de Atrito Estático:</label>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="text" name="input_atrito_estatico" id="input_atrito_estatico" readonly value="0.32" />
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div id="container">
+        <div id="rotacao_rampa">
+            <div id="rampa">
+                <img src="img/rampa.png" />
+                <div id="hipotenusa">
+                    <div id="hipotenusa_medidas" class="medidas">
+                        <div>60.00cm</div>
+                    </div>
+                    <div id="transferidor" class="medidas">
+                        <img src="img/transferidor.png" />
+                    </div>
+                    <div id="caixa">
+                        <img src="img/caixa.png" />
+                        <div id="normal" class="forcas">
+                            <div class="medidas"></div>
+                        </div>
+                        <div id="rotacao_peso">
+                            <div id="peso" class="forcas">
+                                <div class="medidas"></div>
+                            </div>
+                        </div>
+                        <div id="peso_x" class="forcas">
+                            <div class="medidas"></div>
+                        </div>
+                        <div id="peso_y" class="forcas">
+                            <div class="medidas"></div>
+                        </div>
+                        <div id="atrito" class="forcas">
+                            <div class="medidas"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+        <div id="caixote">
+            <img src="img/caixote.png" />
+            <div id="base_medidas" class="medidas">
+                <div>59.09cm</div>
+            </div>
+            <div id="altura_medidas" class="medidas">
+                <div>10.42cm</div>
+            </div>
+        </div>
+        <div id="cremalha">
+            <img src="img/cremalha.png" />
+        </div>
+        <div id="engrenagem">
+            <img src="img/engrenagem.png" />
+        </div>
+        <div id="rotacao_alavanca">
+            <div id="alavanca">
+                <img src="img/alavanca.png" />
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

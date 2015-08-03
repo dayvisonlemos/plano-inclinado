@@ -1,0 +1,328 @@
+body {
+    /*background-image: url("../img/board-black.jpg");*/
+}
+#container {
+    position: relative;
+    width: 1020px;
+    left: 50%;
+    margin-left: -430px;
+    top: 800px;
+}
+#caixote {
+    position: absolute;
+    width: 1020px;
+    height: 46px;
+    bottom: 0px;
+    left: 0px;
+    /*opacity: 0.6;*/
+    /*filter: alpha(opacity=60);*/
+    /* For IE8 and earlier */
+    z-index: 6;
+}
+#rotacao_rampa {
+    position: absolute;
+    width: 0px;
+    height: 0px;
+    left: 0px;
+    bottom: 46px;
+    z-index: 7;
+    transform: rotate(360deg);
+}
+#rampa {
+    position: absolute;
+    width: 1020px;
+    height: 181px;
+    bottom: 0px;
+    left: 0px;
+    /*opacity: 0.6;*/
+    /*filter: alpha(opacity=60);*/
+    /* For IE8 and earlier */
+}
+#hipotenusa {
+    position: absolute;
+    width: 1034px;
+    height: 181px;
+    bottom: 92px;
+    left: -24px;
+    transform: rotate(350deg);
+}
+#hipotenusa_medidas {
+    position: absolute;
+    border: solid 1px red;
+    border-bottom: none;
+    height: 20px;
+    width: 1034px;
+    bottom: 10px;
+    text-align: center;
+    z-index: 2;
+}
+#hipotenusa_medidas div {
+    background-color: white;
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    margin-left: -35px;
+    width: 70px;
+}
+#base_medidas {
+    position: absolute;
+    border: solid 1px red;
+    border-top: none;
+    height: 20px;
+    width: 1020px;
+    bottom: -30px;
+    left: -1px;
+    text-align: center;
+}
+#altura_medidas {
+    position: absolute;
+    border: solid 1px red;
+    border-left: none;
+    height: 179px;
+    width: 20px;
+    bottom: 46px;
+    left: 1028px;
+}
+#base_medidas div {
+    background-color: white;
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    margin-left: -35px;
+    width: 70px;
+}
+#altura_medidas div {
+    background-color: white;
+    position: absolute;
+    left: -14px;
+    top: 50%;
+    margin-top: -10px;
+    width: 70px;
+    transform: rotate(90deg);
+    text-align: center;
+}
+#transferidor {
+    position: absolute;
+    top: 184px;
+    z-index: 4;
+}
+#cremalha {
+    position: absolute;
+    width: 357px;
+    height: 29px;
+    right: 220px;
+    bottom: 0px;
+    z-index: 2;
+}
+#engrenagem {
+    position: absolute;
+    width: 84px;
+    height: 84px;
+    z-index: 2;
+    /*ight: 231px;*/
+    right: 245px;
+    bottom: 20px;
+}
+#rotacao_alavanca {
+    position: absolute;
+    width: 0px;
+    height: 0px;
+    /*right: 273px;*/
+    right: 288px;
+    bottom: 61px;
+    transform: rotate(7deg);
+    z-index: 1;
+}
+#alavanca {
+    position: absolute;
+    top: -29px;
+    left: -254px;
+}
+#caixa {
+    position: absolute;
+    width: 90px;
+    height: 69px;
+    bottom: 0px;
+    z-index: 1;
+}
+.forcas {
+    position: absolute;
+}
+#normal {
+    width: 4px;
+    height: 100px;
+    background-color: orangered;
+    bottom: 34.5px;
+    left: 45px;
+}
+#normal:before {
+    content: "";
+    width: 0;
+    height: 0;
+    position: absolute;
+    top: -8px;
+    left: -6px;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid orangered;
+}
+#normal div {
+    position: absolute;
+    width: 72px;
+    left: 14;
+    top: 0px;
+    color: orangered;
+    font-weight: bold;
+}
+#rotacao_peso {
+    position: absolute;
+    width: 0px;
+    height: 0px;
+    /*right: 273px;*/
+    left: 45px;
+    top: 34.5px;
+    transform: rotate(10deg);
+}
+#peso {
+    width: 4px;
+    height: 100px;
+    background-color: green;
+    top: 0px;
+    left: 0px;
+}
+#peso:before {
+    content: "";
+    width: 0;
+    height: 0;
+    position: absolute;
+    bottom: -8px;
+    left: -6px;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid green;
+}
+#peso div {
+    position: absolute;
+    width: 70px;
+    left: 0;
+    margin-left: -35px;
+    bottom: -30px;
+    color: green;
+    font-weight: bold;
+    text-align: center;
+}
+#peso_x {
+    width: 100px;
+    height: 4px;
+    background-color: black;
+    top: 34.5px;
+    right: 45px;
+}
+#peso_x div {
+    position: absolute;
+    width: 80px;
+    left: -90px;
+    bottom: -8px;
+    color: black;
+    font-weight: bold;
+    text-align: center;
+}
+#peso_x:before {
+    content: "";
+    width: 0;
+    height: 0;
+    position: absolute;
+    bottom: -6px;
+    left: -6px;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-right: 8px solid black;
+}
+#peso_y {
+    width: 4px;
+    height: 100px;
+    background-color: red;
+    top: 34.5px;
+    left: 45px;
+}
+#peso_y:before {
+    content: "";
+    width: 0;
+    height: 0;
+    position: absolute;
+    bottom: -8px;
+    left: -6px;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid red;
+}
+#peso_y div {
+    position: absolute;
+    width: 80px;
+    left: 14;
+    bottom: 0px;
+    color: red;
+    font-weight: bold;
+    text-align: center;
+}
+#atrito {
+    width: 100px;
+    height: 4px;
+    background-color: blue;
+    top: 34.5px;
+    left: 45px;
+}
+#atrito:before {
+    content: "";
+    width: 0;
+    height: 0;
+    position: absolute;
+    bottom: -6px;
+    right: -6px;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-left: 8px solid blue;
+}
+#atrito div {
+    position: absolute;
+    width: 90px;
+    right: -100;
+    bottom: -8px;
+    color: blue;
+    font-weight: bold;
+    text-align: center;
+}
+#buttons {
+    position: absolute;
+    left: 40px;
+    top: 40px;
+}
+#cronometro {
+    position: absolute;
+    right: 40px;
+    top: 40px;
+    width: 200px;
+    border: solid 1px black;
+    font-size: 80px;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: white;
+    -webkit-box-shadow: 10px 10px 20px 0px rgba(0, 0, 0, 0.75);
+    -moz-box-shadow: 10px 10px 20px 0px rgba(0, 0, 0, 0.75);
+    box-shadow: 10px 10px 20px 0px rgba(0, 0, 0, 0.75);
+}
+#div_atrito_estatico{
+    position: absolute;
+    right: 40px;
+    top: 40px;
+    width: 210px;
+    border: solid 1px black;
+    font-size: 24px;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: white;
+    -webkit-box-shadow: 10px 10px 20px 0px rgba(0, 0, 0, 0.75);
+    -moz-box-shadow: 10px 10px 20px 0px rgba(0, 0, 0, 0.75);
+    box-shadow: 10px 10px 20px 0px rgba(0, 0, 0, 0.75);
+    text-align: center;
+}
