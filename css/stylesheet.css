@@ -1,12 +1,18 @@
 body {
     /*background-image: url("../img/board-black.jpg");*/
+    overflow-y: hidden;
 }
 #container {
     position: relative;
     width: 1020px;
     left: 50%;
     margin-left: -430px;
-    top: 800px;
+    top: 680px;
+}
+#inclinacao_controller{
+    position: absolute;
+    bottom: -230px;
+    width: 100%;
 }
 #caixote {
     position: absolute;
@@ -311,18 +317,68 @@ body {
     -moz-box-shadow: 10px 10px 20px 0px rgba(0, 0, 0, 0.75);
     box-shadow: 10px 10px 20px 0px rgba(0, 0, 0, 0.75);
 }
-#div_atrito_estatico{
+#div_atrito_estatico {
     position: absolute;
     right: 40px;
     top: 40px;
-    width: 210px;
-    border: solid 1px black;
-    font-size: 24px;
-    padding: 20px;
-    border-radius: 10px;
-    background-color: white;
-    -webkit-box-shadow: 10px 10px 20px 0px rgba(0, 0, 0, 0.75);
-    -moz-box-shadow: 10px 10px 20px 0px rgba(0, 0, 0, 0.75);
+}
+#bt_atrito_estatico {
     box-shadow: 10px 10px 20px 0px rgba(0, 0, 0, 0.75);
-    text-align: center;
+    width: 200px;
+    white-space: normal;
+    color: white;
+    font-weight: normal;
+    border: none;
+    background-image: -webkit-gradient( linear, left top, left bottom, color-stop(0, #1F4CB5), color-stop(1, #272A30));
+    background-image: -o-linear-gradient(bottom, #1F4CB5 0%, #272A30 100%);
+    background-image: -moz-linear-gradient(bottom, #1F4CB5 0%, #272A30 100%);
+    background-image: -webkit-linear-gradient(bottom, #1F4CB5 0%, #272A30 100%);
+    background-image: -ms-linear-gradient(bottom, #1F4CB5 0%, #272A30 100%);
+    background-image: linear-gradient(to bottom, #1F4CB5 0%, #272A30 100%);
+}
+#info-var {
+    position: absolute;
+    left: 40px;
+    top: 40px;
+}
+.info-equation {
+    font-size: 48px;
+}
+.info-equation span.indice {
+    font-size: 16px;
+}
+#friction-static-span {
+    cursor: pointer;
+}
+#div-info {
+    width: 600px;
+    text-align: justify;
+    padding: 0px;
+    display: none;
+}
+#div-info div.header {
+    padding: 5px;
+    font-weight: bold;
+    background-image: -webkit-gradient( linear, left top, left bottom, color-stop(0, #1F4CB5), color-stop(1, #272A30));
+    background-image: -o-linear-gradient(bottom, #1F4CB5 0%, #272A30 100%);
+    background-image: -moz-linear-gradient(bottom, #1F4CB5 0%, #272A30 100%);
+    background-image: -webkit-linear-gradient(bottom, #1F4CB5 0%, #272A30 100%);
+    background-image: -ms-linear-gradient(bottom, #1F4CB5 0%, #272A30 100%);
+    background-image: linear-gradient(to bottom, #1F4CB5 0%, #272A30 100%);
+    color: white;
+}
+#div-info div.body {
+    width: 560px;
+    height: 400px;
+    overflow-y: auto;
+    padding: 20px;
+}
+input#massa-input {
+    width: 150px;
+    border: none;
+    background: none;
+    padding-right: 10px;
+}
+input#massa-input:hover {
+    border: dashed 1px gray;
 }

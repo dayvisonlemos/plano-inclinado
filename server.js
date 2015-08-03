@@ -38,6 +38,11 @@ app.get('/static', function (req, res) {
     arduino.staticFriction(function(o){
         res.send(JSON.stringify({'static-friction': o}));
     });
+    
+    /*setTimeout(function(){
+        res.send(JSON.stringify({'static-friction': 74}));
+    }, 3000);*/
+    
 });
 
 app.listen(8080, '0.0.0.0');

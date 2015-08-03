@@ -1,5 +1,3 @@
-//"use strict";
-
 $.extend({
     currentDeg: 10,
     seno: function (angulo) {
@@ -14,25 +12,25 @@ $.extend({
         var rad = angulo * (Math.PI / 180);
         return Math.tan(rad);
     },
-    sensor: undefined,
-    detected: false,
-    infinitesimalTime: undefined,
-    currentPosition: 60,
-    boxMass: 0.052, //kg
-    weightForce: 0.052 * 9.8, //N
-    boxWeight: 0.052 * 9.8 * 200,
-    staticFriction: 0.18,
-    moving: false,
-    milliseconds: 0,
-    seconds: 0,
-    workingCronus: undefined
+    showLoader: function () {
+        $.blockUI({
+            message: $('#ajax-loader'),
+            css: {
+                top: ($(window).height() - 96) / 2 + 'px',
+                left: ($(window).width() - 96) / 2 + 'px',
+                width: '96px'
+            }
+        });
+    },
+    hideLoader: function () {
+        $.unblockUI();
+    },
+    lpad: function (n, width, z) {
+        z = z || '0';
+        n = n + '';
+        return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+    }
 });
-
-function pad(n, width, z) {
-    z = z || '0';
-    n = n + '';
-    return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
-}
 
 /*setInterval(function () {
 
@@ -112,12 +110,37 @@ function pad(n, width, z) {
 
 }, 10);*/
 
+var _ = {
+    g: 9.8,
+    massa_caixa: undefined,
+    staticFriction: undefined,
+    dinamicFriction: undefined,
+    peso: function () {
+        return parseFloat((_.massa_caixa * _.g).toFixed(2), null);
+    },
+    peso_x: function (deg) {
+        return _.peso() * $.seno(deg);
+    },
+    peso_y: function (deg) {
+        return _.peso() * $.coseno(deg);
+    },
+    peso_modulo: function () {
+        return _.peso() * 200;
+    },
+    peso_x_modulo: function (deg) {
+        return _.peso_x(deg) * 200;
+    },
+    peso_y_modulo: function (deg) {
+        return _.peso_y(deg) * 200;
+    }
+}
 
 var DinamicaIno = function () {
 
     var system = {
+
         init: function () {
-            $('#caixa').on('detected', function (e, data) {
+            /*$('#caixa').on('detected', function (e, data) {
                 var _this = $(this);
                 if ($.detected) {
                     _this.show();
@@ -133,6 +156,24 @@ var DinamicaIno = function () {
                 _this.css('left', ((945 * data) / 53) + 'px');
             });
 
+            
+
+           */
+
+            this.fireEvents();
+            $('#massa-input').val(0.062);
+            $('#massa-input').trigger('change');
+
+            $('#input_medidas').trigger('change');
+            $('#input_forcas').trigger('change');
+            $("#slider-1").trigger('slidestop');
+        },
+        fireEvents: function () {
+            $('#massa-input').change(function () {
+                _.massa_caixa = parseFloat($(this).val(), null);
+                $('#input_inclinacao').trigger('change');
+            });
+
             $('#input_medidas').change(function () {
                 system.mostrarMedidas(!$(this).is(':checked'));
             });
@@ -141,18 +182,10 @@ var DinamicaIno = function () {
                 system.mostrarDiagrama(!$(this).is(':checked'));
             });
 
-            $('#input_inclinacao').change(function () {
-                system.mover($(this).val());
+            $("#slider-1").on('slidestop', function (event) {
+                system.mover($("#slider-1").val());
             });
 
-
-            $('#peso').css('height', $.boxWeight + 'px');
-            $('#peso div').text('P: ' + parseFloat($.weightForce.toFixed(2)) + ' N');
-
-            $('#input_medidas').trigger('change');
-            $('#input_forcas').trigger('change');
-            $('#input_inclinacao').trigger('change');
-            $('#input_massa').val($.boxMass + ' kg');
         },
         mover: function (deg) {
             if (deg < 10 || deg > 32) {
@@ -193,19 +226,22 @@ var DinamicaIno = function () {
                 $('.forcas').hide();
             }
         },
-        atritoEstatico: function(elem){
-            
+        atritoEstatico: function (elem) {
+            $.showLoader();
+            $("#slider-1").val(10);
+            $("#slider-1").trigger('slidestop');
             $.get('/static').done(function (data) {
-                var result = eval('['+data+']')[0];
+                var result = eval('[' + data + ']')[0];
                 console.log(result);
                 var hDeg = parseInt(result['static-friction'], null);
-                var staticFrictionDeg = parseInt((hDeg * 22 /180) + 10, null);
-                $.staticFriction = parseFloat($.tangente(staticFrictionDeg)).toFixed(2);
-                elem.html('<span style="font-size: 12px;">Coeficiente de Atrito Estático:</span>' + $.staticFriction);
-                system.mover(staticFrictionDeg);
-            
+                var staticFrictionDeg = parseInt((hDeg * 22 / 180) + 10, null);
+                _.staticFriction = parseFloat($.tangente(staticFrictionDeg)).toFixed(2);
+                $('#friction-static-span').text(_.staticFriction);
+                $("#slider-1").val(staticFrictionDeg);
+                $("#slider-1").trigger('slidestop');
+                $.hideLoader();
             });
-            
+
         }
     };
     return system;
@@ -241,26 +277,32 @@ $.fn.translate = function (o) {
                 'transform': 'rotate(' + (inclinacao + 10) + 'deg)'
             });
 
-            $('#peso_x').css('width', $.boxWeight * $.seno(inclinacao + 10));
-            var f_peso_x = parseFloat(($.weightForce * $.seno(inclinacao + 10)).toFixed(2));
-            $('#peso_x div').text('Px: ' + f_peso_x + ' N');
+            var angulo = inclinacao + 10;
 
-            $('#peso_y').css('height', $.boxWeight * $.coseno(inclinacao + 10));
-            $('#peso_y div').text('Py: ' + parseFloat(($.weightForce * $.coseno(inclinacao + 10)).toFixed(2)) + ' N');
+            $('#peso').css('height', _.peso_modulo() + 'px');
+            $('#peso div').text('P: ' + _.peso() + ' N');
 
-            var f_atrito = parseFloat(($.weightForce * $.coseno(inclinacao + 10) * $.staticFriction).toFixed(2));
+            $('#peso_x').css('width', _.peso_x_modulo(angulo) + 'px');
+            $('#peso_x div').text('Px: ' + _.peso_x(angulo).toFixed(2) + ' N');
 
-            if (f_peso_x > 0.16) {
-                $('#atrito').css('width', $.boxWeight * $.coseno(inclinacao + 10) * $.staticFriction);
-                $('#atrito div').text('Fac: ' + f_atrito + ' N');
+            $('#peso_y').css('height', _.peso_y_modulo(angulo) + 'px');
+            $('#peso_y div').text('Px: ' + _.peso_y(angulo).toFixed(2) + ' N');
+
+            $('#normal').css('height', _.peso_y_modulo(angulo) + 'px');
+            $('#normal div').text('N: ' + _.peso_y(angulo).toFixed(2) + ' N');
+
+            _.staticFriction = _.staticFriction || 0;
+            _.dinamicFriction = _.dinamicFriction || 0;
+
+            var forcaAtritoEstatico = _.peso_y(angulo) * _.staticFriction;
+            var forcaAtritoCinetico = _.peso_y(angulo) * _.dinamicFriction;
+            if (_.peso_x(angulo).toFixed(2) <= forcaAtritoEstatico.toFixed(2)) {
+                $('#atrito').css('width', _.peso_x_modulo(angulo) + 'px');
+                $('#atrito div').text('Fae: ' + _.peso_x(angulo).toFixed(2) + ' N');
             } else {
-                $('#atrito').css('width', $.boxWeight * $.seno(inclinacao + 10));
-                $('#atrito div').text('Fae: ' + f_peso_x + ' N');
+                $('#atrito').css('width', forcaAtritoCinetico + 'px');
+                $('#atrito div').text('Fae: ' + (forcaAtritoCinetico * 200) + ' N');
             }
-
-
-            $('#normal').css('height', $.boxWeight * $.coseno(inclinacao + 10));
-            $('#normal div').text('N: ' + parseFloat(($.weightForce * $.coseno(inclinacao + 10)).toFixed(2)) + ' N');
 
             $('#base_medidas').css({
                 'width': parseInt($.coseno(inclinacao + 10) * 1034) + 'px'
@@ -272,6 +314,7 @@ $.fn.translate = function (o) {
             });
             $('#altura_medidas div').text(parseFloat($.seno(inclinacao + 10) * 60).toFixed(2) + 'cm');
             $(elem.selector).data('current-deg', now);
+
         }
     });
 }

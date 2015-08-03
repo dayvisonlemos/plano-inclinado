@@ -6,9 +6,9 @@
     <title>Plano incliado</title>
     <link rel="stylesheet" href="css/stylesheet.css">
     <link rel="stylesheet" href="css/jquery.mobile-1.4.5.min.css">
-    <link rel="stylesheet" href="css/animate.css">
     <script src="js/libs/jquery-2.0.3.js"></script>
     <script src="js/libs/jquery.mobile-1.4.5.min.js"></script>
+    <script src="js/libs/jquery.blockUI.js"></script>
     <script src="js/app.js"></script>
     <script type="text/javascript">
         var di = new DinamicaIno();
@@ -18,6 +18,18 @@
             $("#bt_atrito_estatico").click(function() {
                 di.atritoEstatico($(this));
             });
+
+            $("#friction-static-div").click(function() {
+                $.blockUI({
+                    message: $('#div-info'),
+                    css: {
+                        top: ($(window).height() - 600) / 2 + 'px',
+                        left: ($(window).width() - 460) / 2 + 'px',
+                        width: '600px'
+                    }
+                });
+                $('.blockOverlay').attr('title', 'Click para fechar').click($.unblockUI);
+            });
         });
 
     </script>
@@ -26,83 +38,9 @@
 <body>
     <div id="cronometro" style="display: none;">00:00</div>
     <div id="div_atrito_estatico">
-        <button id="bt_atrito_estatico">
+        <button id="bt_atrito_estatico" type="button">
+            Coeficiente de Atrito Estático
         </button>
-        Identificar Coeficiente de Atrito Estático
-    </div>
-    <div id="buttons" style="display: none;">
-        <table cellspadding="0" cellspacing="0" border="0">
-            <tr>
-                <td>
-                    <label style="font-size: 28px;" for="input_medidas">Mostrar Medidas:</label>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <input type="checkbox" data-role="flipswitch" name="input_medidas" id="input_medidas" data-on-text="Sim" data-off-text="Não" />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <label style="font-size: 28px; padding-top: 20px;" for="input_forcas">Mostrar Diagrama de Forças:</label>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <input type="checkbox" data-role="flipswitch" name="input_forcas" id="input_forcas" data-on-text="Sim" data-off-text="Não" />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <label style="font-size: 28px; padding-top: 20px;" for="input_forcas">Inclinação:</label>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <input type="range" name="input_inclinacao" id="input_inclinacao" min="10" max="32" value="20">
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <label style="font-size: 28px; padding-top: 20px;" for="input_massa">Massa:</label>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <input type="text" name="input_massa" id="input_massa" readonly>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <label style="font-size: 28px; padding-top: 20px;" for="input_massa">Aceleração:</label>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <input type="text" name="input_massa" id="input_aceleracao" readonly />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <label style="font-size: 28px; padding-top: 20px;" for="input_atrito_cinetico">Coeficiente de Atrito Cinético:</label>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <input type="text" name="input_atrito_cinetico" id="input_atrito_cinetico" readonly />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <label style="font-size: 28px; padding-top: 20px;" for="input_atrito_estatico">Coeficiente de Atrito Estático:</label>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <input type="text" name="input_atrito_estatico" id="input_atrito_estatico" readonly value="0.32" />
-                </td>
-            </tr>
-        </table>
     </div>
     <div id="container">
         <div id="rotacao_rampa">
@@ -160,8 +98,47 @@
                 <img src="img/alavanca.png" />
             </div>
         </div>
-    </div>
+        <div id="inclinacao_controller">
+            <label for="slider-1">Inclinação</label>
+            <input type="range" name="slider-1" id="slider-1" value="15" min="10" max="32" />
 
+            <table cellspadding="0" cellspacing="0" border="0">
+                <tr>
+                    <td style="padding-right: 30px;">
+                        <label for="input_medidas">Mostrar Medidas</label>
+                        <input type="checkbox" data-role="flipswitch" name="input_medidas" id="input_medidas" data-on-text="Sim" data-off-text="Não" checked />
+                    </td>
+                    <td>
+                        <label for="input_forcas">Mostrar Diagrama</label>
+                        <input type="checkbox" data-role="flipswitch" name="input_forcas" id="input_forcas" data-on-text="Sim" data-off-text="Não" checked />
+                    </td>
+                </tr>
+            </table>
+
+
+
+        </div>
+
+    </div>
+    <div id="info-var">
+        <div class="info-equation" id="friction-static-div" title="Coeficiente de Atrito Estático"><span>&#x3BC;</span><span class="indice">Estático</span><span> = </span><span id="friction-static-span">?</span></div>
+        <div class="info-equation" id="friction-dinamic-div" title="Coeficiente de Atrito Cinético"><span>&#x3BC;</span><span class="indice">Cinético</span><span> = </span><span id="friction-dinamic-span">?</span></div>
+        <div class="info-equation" id="massa-div" title="Massa"><span>m</span><span> = </span>
+            <input type="tex" id="massa-input"><span>kg</span></div>
+        <div class="info-equation" id="aceleracao-div" title="Aceleração"><span>a</span><span> = </span><span id="aceleracao-span">?</span></div>
+    </div>
+    <div id="div-info">
+        <div class="header">Força de atrito estático</div>
+        <div class="body">
+            <p>A força de atrito estático ocorre quando a força aplicada não é suficiente para mover o objeto. É aquela situação em que você empurra o guarda roupa e ele não se move. Isso ocorre porque a força aplicada é igualada pela força de atrito. Observe que por esse motivo, a força de atrito estático tem a sua intensidade variável.</p>
+            <p>Por exemplo, imagine que você aplicou uma força de 100N no guarda roupa. Se ele não se mover é porque o atrito também vale 100N. Se você aumentar a força aplicada para 130N e ele continuar imóvel, é porque atrito também aumentou para 130N e assim continuará sendo até que o guarda roupa entre em movimento.</p>
+            <p>Observe então, que apesar do atrito estático variar com a força aplicada, ele deve ter um valor máximo que, se for ultrapassado, acarretará no movimento do objeto. Esse atrito máximo é determinado pela seguinte equação matemática.</p>
+            <p>
+                <div class="info-equation"><span><strong>F</strong></span><span class="indice">Atrito</span><span> = </span><span>&#x3BC;</span><span class="indice">Estático</span><span><strong>N</strong></span></div>
+            </p>
+        </div>
+    </div>
+    <div id="ajax-loader" style="width: 96px; heigth: 96px; display: none;"><img src="img/ajax-loader.gif"></div>
 </body>
 
 </html>
