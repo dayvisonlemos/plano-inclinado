@@ -30,16 +30,41 @@
                 });
                 $('.blockOverlay').attr('title', 'Click para fechar').click($.unblockUI);
             });
+
+            $("#bt_movimento").click(function() {
+                var moveType = $(this).attr('data-move') === "true";
+                if (moveType) {
+                    $(this).text('Parar Monitoração');
+                    $("#cronometro").animate({
+                        'top': '40px'
+                    }, "slow", function() {
+                        $("#bt_movimento").attr('data-move', "false");
+                        di.startBackgroundworker();
+                    });
+                } else {
+                    $(this).text('Iniciar Movimento');
+                    $("#cronometro").animate({
+                        'top': '-180px'
+                    }, "slow", function() {
+                        $("#bt_movimento").attr('data-move', "true");
+                        di.endBackgroundworker();
+                    });
+                }
+
+            });
         });
 
     </script>
 </head>
 
 <body>
-    <div id="cronometro" style="display: none;">00:00</div>
+    <div id="cronometro">00:00</div>
     <div id="div_atrito_estatico">
-        <button id="bt_atrito_estatico" type="button">
+        <button id="bt_atrito_estatico" class="bt" type="button">
             Coeficiente de Atrito Estático
+        </button>
+        <button id="bt_movimento" class="bt" type="button" data-move="true">
+            Iniciar Movimento
         </button>
     </div>
     <div id="container">

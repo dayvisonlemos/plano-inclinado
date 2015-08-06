@@ -32,84 +32,6 @@ $.extend({
     }
 });
 
-/*setInterval(function () {
-
-    $.get('/distance').done(function (data) {
-        $.sensor = eval('[' + data + ']')[0];
-        var distance = parseInt($.sensor.distance, null);
-        if (distance < 54.00) {
-            if (!$.detected) {
-                $.detected = true;
-                $('#caixa').trigger('detected', distance);
-            }
-            if (distance <= 50 && distance >= 10) {
-                $('#caixa').trigger('move', distance);
-                if (!$.moving) {
-                    $.moving = true;
-                    $.infinitesimalTime = [];
-                    $.workingCronus = setInterval(function () {
-                        $.milliseconds += 1;
-                        var miliseconds = $.milliseconds % 100;
-                        if (miliseconds === 0) {
-                            $.seconds += 1;
-                        }
-                        $.infinitesimalTime.push({
-                            position: $.sensor.distance,
-                            milliseconds: $.milliseconds
-                        });
-                        $('#cronometro').text(pad($.seconds, 2) + ':' + pad(miliseconds, 2));
-                    }, 10);
-                }
-            } else {
-                if (distance < 10) {
-                    $('#caixa').trigger('move', 0);
-                    if ($.moving) {
-                        $.moving = false;
-                        clearInterval($.workingCronus);
-
-                        var realTimes = [];
-                        var lastPosition = 60;
-                        for (var index in $.infinitesimalTime) {
-                            var o = $.infinitesimalTime[index];
-                            if (o.position < lastPosition) {
-                                realTimes.push(o);
-                                lastPosition = o.position;
-                            }
-                        }
-
-                        if (realTimes.length > 0) {
-                            var space = (50 - realTimes[realTimes.length - 1].position) / 100; //Transformando valor em metros
-                            var time = realTimes[realTimes.length - 1].milliseconds / 100; //Transformando em segundos
-                            var aceleracao = 2 * space / Math.pow(time, 2);
-                            $('#input_aceleracao').val(parseFloat(aceleracao.toFixed(2)) + 'm/s2');
-
-                            var inclinacao = parseInt($('#input_inclinacao').val());
-                            var cac = parseFloat(Math.abs($.tangente(inclinacao) - (aceleracao / ($.coseno(inclinacao) * 9.8))).toFixed(2));
-                            $('#input_atrito_cinetico').val(cac);
-
-                        }
-                    }
-                }
-                if (distance > 50) {
-                    $.milliseconds = 0;
-                    $.seconds = 0;
-                    $.infinitesimalTime = undefined;
-                    $('#cronometro').text('00:00');
-                    $('#input_aceleracao').val('');
-                    $('#input_atrito_cinetico').val('');
-                }
-            }
-
-        } else {
-            if ($.detected) {
-                $.detected = false;
-                $('#caixa').trigger('detected');
-            }
-        }
-    });
-
-}, 10);*/
-
 var _ = {
     g: 9.8,
     massa_caixa: undefined,
@@ -132,36 +54,23 @@ var _ = {
     },
     peso_y_modulo: function (deg) {
         return _.peso_y(deg) * 200;
-    }
+    },
+    boxDetected: false,
+    boxMoving: false,
+    infinitesimalPosition: [],
+    chartData: [],
+    cronometroBackgroundworker: undefined,
+    milliseconds: 0,
+    seconds: 0
 }
 
 var DinamicaIno = function () {
 
     var system = {
-
+        backgroundworker: undefined,
         init: function () {
-            /*$('#caixa').on('detected', function (e, data) {
-                var _this = $(this);
-                if ($.detected) {
-                    _this.show();
-                    _this.css('left', ((945 * data) / 53) + 'px');
-
-                } else {
-                    _this.hide();
-                }
-            });
-
-            $('#caixa').on('move', function (e, data) {
-                var _this = $(this);
-                _this.css('left', ((945 * data) / 53) + 'px');
-            });
-
-            
-
-           */
-
             this.fireEvents();
-            $('#massa-input').val(0.062);
+            $('#massa-input').val(0.070);
             $('#massa-input').trigger('change');
 
             $('#input_medidas').trigger('change');
@@ -183,7 +92,30 @@ var DinamicaIno = function () {
             });
 
             $("#slider-1").on('slidestop', function (event) {
-                system.mover($("#slider-1").val());
+                $.showLoader();
+
+                var deg = parseInt((90 * $("#slider-1").val() - 900) / 11);
+
+                $.get('/arduino/' + deg).done(function (data) {
+                    $.hideLoader();
+                    system.mover($("#slider-1").val());
+                });
+            });
+
+            $('#caixa').on('detected', function (e, data) {
+                var _this = $(this);
+                if (_.boxDetected) {
+                    _this.show();
+                    _this.css('left', ((945 * data) / 53) + 'px');
+
+                } else {
+                    _this.hide();
+                }
+            });
+
+            $('#caixa').on('move', function (e, data) {
+                var _this = $(this);
+                _this.css('left', ((945 * data) / 53) + 'px');
             });
 
         },
@@ -193,7 +125,6 @@ var DinamicaIno = function () {
             }
             var inclinacao = deg - 10;
             var rotacao = Math.abs((((141 * inclinacao) - 858) / 11) - 282);
-            console.log('inclinação: ' + inclinacao);
 
             this.engrenagem(parseInt(rotacao, null));
         },
@@ -228,8 +159,7 @@ var DinamicaIno = function () {
         },
         atritoEstatico: function (elem) {
             $.showLoader();
-            $("#slider-1").val(10);
-            $("#slider-1").trigger('slidestop');
+            system.mover(10);
             $.get('/static').done(function (data) {
                 var result = eval('[' + data + ']')[0];
                 console.log(result);
@@ -241,7 +171,97 @@ var DinamicaIno = function () {
                 $("#slider-1").trigger('slidestop');
                 $.hideLoader();
             });
+        },
+        startBackgroundworker: function () {
+            _.chartData = [];
+            this.backgroundworker = setInterval(function () {
+                $.get('/distance').done(function (data) {
+                    $.sensor = eval('[' + data + ']')[0];
+                    var distance = parseInt($.sensor.distance, null);
+                    if (distance <= 54) {
+                        if (!_.boxDetected) {
+                            _.boxDetected = true;
+                            $('#caixa').trigger('detected', distance);
+                        }
+                        if (distance <= 50 && distance >= 10) {
+                            $('#caixa').trigger('move', distance);
+                            if (!_.boxMoving) {
+                                _.boxMoving = true;
+                                _.infinitesimalPosition = [];
+                                _.cronometroBackgroundworker = setInterval(function () {
+                                    _.milliseconds += 1;
+                                    var miliseconds = _.milliseconds % 100;
+                                    if (miliseconds === 0) {
+                                        _.seconds += 1;
+                                    }
+                                    _.infinitesimalPosition.push({
+                                        position: $.sensor.distance,
+                                        milliseconds: _.milliseconds
+                                    });
+                                    $('#cronometro').text($.lpad(_.seconds, 2) + ':' + $.lpad(miliseconds, 2));
+                                }, 10);
+                            }
+                        } else {
+                            if (distance < 10) {
+                                $('#caixa').trigger('move', 0);
+                                if (_.boxMoving) {
+                                    _.boxMoving = false;
+                                    clearInterval(_.cronometroBackgroundworker);
+                                }
 
+                                var realPositions = [];
+                                var lastPosition = 60;
+                                for (var index in _.infinitesimalPosition) {
+                                    var o = _.infinitesimalPosition[index];
+                                    if (o.position < lastPosition) {
+                                        realPositions.push(o);
+                                        lastPosition = o.position;
+                                    }
+                                }
+
+                                if (realPositions.length > 0) {
+                                    var space = (50 - realPositions[realPositions.length - 1].position) / 100; //Transformando valor em metros
+                                    var time = realPositions[realPositions.length - 1].milliseconds / 100; //Transformando em segundos
+                                    var aceleracao = 2 * space / Math.pow(time, 2);
+                                    $('#aceleracao-span').text(parseFloat(aceleracao.toFixed(2)) + 'm/s2');
+
+                                    var inclinacao = parseInt($('#slider-1').val());
+                                    var cac = parseFloat(Math.abs($.tangente(inclinacao) - (aceleracao / ($.coseno(inclinacao) * _.g))).toFixed(2));
+                                    $('#friction-dinamic-span').text(cac);
+                                    
+                                    var data = {};
+                                    data.space = space;
+                                    data.time = time;
+                                    data.aceleracao = aceleracao;
+                                    data.dinamicFriction = cac;
+                                    
+                                    _.chartData.push(data);
+                                }
+
+                            }
+
+                            if (distance > 50) {
+                                _.milliseconds = 0;
+                                _.seconds = 0;
+                                _.infinitesimalPosition = [];
+                                $('#cronometro').text('00:00');
+                            }
+                        }
+                    } else {
+                        if (_.boxDetected) {
+                            _.boxDetected = false;
+                            $('#caixa').trigger('detected', distance);
+                        }
+                    }
+                });
+            }, 10);
+        },
+        endBackgroundworker: function () {
+            _.milliseconds = 0;
+            _.seconds = 0;
+            _.infinitesimalPosition = [];
+            $('#cronometro').text('00:00');
+            clearInterval(this.backgroundworker);
         }
     };
     return system;
